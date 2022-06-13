@@ -1,0 +1,23 @@
+import os, sys, optparse
+
+LOGFILE ="setupapi.dev.log"
+KEYWORD1 = "[Device Install (Hardware initiated)"
+#mogli smo i bez KEYWORD2 tako da dodamo na KEYWORD1 jos - SWD jer je output bia ovakav:
+#[Device Install (Hardware initiated) - SWD\WPDBUSENUM\_??_USBSTOR#Disk&Ven_JetFlash&Prod_Transcend_16GB&Rev_1.00#3451413224&0#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}]
+#a htjeli smo dodge linije: [Device Install (Hardware initiated) - USB\\VID_090C&PID_1000\\AA04012900007482]\n']
+KEYWORD2 = "USBSTOR"
+
+with open(LOGFILE, "r") as in_file:
+    for line in in_file:
+        if KEYWORD1 in line and KEYWORD2 in line:
+            dev_info1 = line.split("#")[1].split("&")
+            dev_info2 = line.split("#")[2]
+            print("Vendor ID: ",dev_info1[1])
+            print("Product ID: ",dev_info1[2])
+            print("Revision: ",dev_info1[3])
+            print("Serial Number: ",dev_info2)
+
+            #ovdje splita po kljucnoj rijeci start jer iza
+            # nje dolazi nase vrijeme uporabe sticka
+            # tj instlacije stickova software-a
+            print(next(in_file).split("start")[1].strip())
